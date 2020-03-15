@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 public class ShutterStockTag {
 	private static Logger logger = LoggerFactory.getLogger(ShutterStockTag.class);
 	private static final String SHUTTER_IMAGE_URL = "https://www.shutterstock.com/ru/image-photo/";
+	private static final String SHUTTER_DIV_TAGS = "ExpandableKeywordsList_container_div";
+	private static final String TAGGED_PHOTO_PREFIX = "shutterstock_tagged_";
 
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
@@ -62,7 +64,7 @@ public class ShutterStockTag {
 					List<String> tags = mainElement.getAllElements().stream().filter(element -> element.tagName().equals("a")).map(Element::text).collect(Collectors.toList());
 					if (!tags.isEmpty()) {
 						logger.info(tags.size() + " new tags will be added for " + imageId);
-						File newImage = new File(pathWithTags + "/" + "shutterstock_tagged_" + imageId + "." + FilenameUtils.getExtension(image.getFileName().toString()));
+						File newImage = new File(pathWithTags + "/" + TAGGED_PHOTO_PREFIX + imageId + "." + FilenameUtils.getExtension(image.getFileName().toString()));
 						changeExifMetadata(image.toFile(), newImage, tags);
 					}
 				} else {
@@ -78,7 +80,7 @@ public class ShutterStockTag {
 	public static Element findMainElement(Document doc) {
 		for( Element element : doc.getAllElements()) {
 			for( Attribute attribute : element.attributes()) {
-				if( attribute.getValue().equalsIgnoreCase("ExpandableKeywordsList_container_div")) {
+				if( attribute.getValue().equalsIgnoreCase(SHUTTER_DIV_TAGS)) {
 					return element;
 				}
 			}
